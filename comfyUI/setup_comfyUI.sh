@@ -28,9 +28,13 @@ download_if_not_exists() {
     fi
 }
 
-# Load environment variables from .env file
+# Load environment variables from .env file and print them
 if [ -f .env ]; then
     export $(grep -v '^#' .env | xargs)
+    echo "Loaded environment variables from .env:"
+else
+    log_message "Error: .env file not found. Exiting."
+    exit 1  # Exit if .env file is not found
 fi
 
 # Check for configuration parameter
