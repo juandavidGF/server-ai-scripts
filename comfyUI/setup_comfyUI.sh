@@ -28,6 +28,11 @@ download_if_not_exists() {
     fi
 }
 
+# Load environment variables from .env file
+if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
+
 # Check for configuration parameter
 if [ "$1" = "flux" ]; then
     FLUX_CONFIG=true
