@@ -134,7 +134,7 @@ fi
 CHECKPOINTS_DIR="$COMFY_DIR/models/checkpoints"
 log_message "Downloading Stable Diffusion checkpoint"
 mkdir -p "$CHECKPOINTS_DIR"
-download_if_not_exists "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.ckpt" "$CHECKPOINTS_DIR/v1-5-pruned-emaonly.ckpt"
+# download_if_not_exists "https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/main/v1-5-pruned-emaonly.ckpt" "$CHECKPOINTS_DIR/v1-5-pruned-emaonly.ckpt"
 
 # Flux-specific configuration
 if [ "$FLUX_CONFIG" = true ]; then
