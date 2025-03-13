@@ -28,7 +28,6 @@ def generate_captions(folder_path):
     """Generates detailed captions for images using the LLaVA 13B model, specifically for TOK man."""
     print("Loading model...")
     
-    # Upgrade to 13B model for better detail (given 40+ vRAM)
     model_id = "llava-hf/llava-1.5-13b-hf"
     
     # Load processor and model
@@ -47,7 +46,7 @@ def generate_captions(folder_path):
         "Second sentence: what the TOK man is doing. "
         "Third sentence: his appearance and specific details. "
         "Fourth sentence: composition, keywords separated by commas, precise layout. "
-        "Example: 'The image is photo of TOK man, he is swinging a sword in a battle stance. He wears a futuristic silver suit with glowing blue stripes and a spiked helmet. The composition features dynamic lines, vibrant colors, action pose, dark stormy background.'"
+        "Example: 'photo of TOK man, he is swinging a sword in a battle stance. He wears a futuristic silver suit with glowing blue stripes and a spiked helmet. The composition features dynamic lines, vibrant colors, action pose, dark stormy background.'"
     )
 
     valid_extensions = ('.jpg', '.jpeg', '.png')
@@ -99,6 +98,15 @@ def generate_captions(folder_path):
                 if caption.startswith("ASSISTANT:"):
                     caption = caption[len("ASSISTANT:"):].strip()
                 
+                # Post-process caption to ensure "TOK man" is included
+                if "TOK" not in caption:
+                    if "man" in caption.lower():
+                        # Replace "man" with "TOK man" (case-insensitive)
+                        caption = caption.replace("man", "TOK man").replace("Man", "TOK man")
+                    else:
+                        # Prepend "TOK man" if neither "TOK" nor "man" is present
+                        caption = "TOK man " + caption
+                
                 # Debug: Print raw output
                 print(f"Raw caption for {filename}: {caption}")
                 
@@ -115,10 +123,11 @@ def generate_captions(folder_path):
 if __name__ == "__main__":
     folder_path = '../images'
     
-    # Check for 'rename' argument
+    # Check for 'rename' argument and only run rename if specified
     if len(sys.argv) > 1 and sys.argv[1] == "rename":
         rename_images(folder_path)
         print("Images renamed successfully.")
-        
+    
+    # Always run caption generation
     print("Generating captions...")
     generate_captions(folder_path)
