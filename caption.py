@@ -47,7 +47,7 @@ def generate_captions(folder_path):
         "Second sentence: what the TOK man is doing. "
         "Third sentence: his appearance and specific details. "
         "Fourth sentence: composition, keywords separated by commas, precise layout. "
-        "Example: 'The image is a digital painting. The TOK man is swinging a sword in a battle stance. He wears a futuristic silver suit with glowing blue stripes and a spiked helmet. The composition features dynamic lines, vibrant colors, action pose, dark stormy background.'"
+        "Example: 'The image is photo of TOK man, he is swinging a sword in a battle stance. He wears a futuristic silver suit with glowing blue stripes and a spiked helmet. The composition features dynamic lines, vibrant colors, action pose, dark stormy background.'"
     )
 
     valid_extensions = ('.jpg', '.jpeg', '.png')
@@ -119,10 +119,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "rename":
         rename_images(folder_path)
         print("Images renamed successfully.")
-    else:
-        # Always run rename first to ensure sequential naming
-        print("Renaming images...")
-        rename_images(folder_path)
         
     print("Generating captions...")
     generate_captions(folder_path)
