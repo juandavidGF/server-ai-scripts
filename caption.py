@@ -2,6 +2,7 @@ import sys
 import os
 from pathlib import Path
 import torch
+import argparse
 from PIL import Image
 from transformers import AutoProcessor, LlavaForConditionalGeneration
 
@@ -24,8 +25,8 @@ def rename_images(folder_path):
         os.rename(old_file, new_file)
         print(f'Renamed: {old_file} → {new_file}')
 
-def generate_captions(folder_path):
-    """Generates detailed captions for images using the LLaVA 13B model, specifically for TOK man."""
+def generate_captions(folder_path, keyword):
+    """Generates detailed captions for images using the LLaVA 13B model, specifically for the keyword entity."""
     print("Loading model...")
     
     model_id = "llava-hf/llava-1.5-13b-hf"
@@ -39,14 +40,14 @@ def generate_captions(folder_path):
         device_map="auto"
     )
 
-    # Clear prompt with an example for TOK man
+    # Clear prompt with an example for the keyword entity
     prompt_text = (
-        "Describe the TOK man in this image in four detailed sentences. "
-        "First sentence: style and type of the image (e.g., painting, photo). "
-        "Second sentence: what the TOK man is doing. "
-        "Third sentence: his appearance and specific details. "
-        "Fourth sentence: composition, keywords separated by commas, precise layout. "
-        "Example: 'photo of TOK man, he is swinging a sword in a battle stance. He wears a futuristic silver suit with glowing blue stripes and a spiked helmet. The composition features dynamic lines, vibrant colors, action pose, dark stormy background.'"
+        f"Describe the {keyword} man in this image in four detailed sentences. "
+        f"First sentence: style and type of the image (e.g., painting, photo). "
+        f"Second sentence: what the {keyword} man is doing. "
+        f"Third sentence: his appearance and specific details. "
+        f"Fourth sentence: composition, keywords separated by commas, precise layout. "
+        f"Example: 'photo of {keyword} man, he is swinging a sword in a battle stance. He wears a futuristic silver suit with glowing blue stripes and a spiked helmet. The composition features dynamic lines, vibrant colors, action pose, dark stormy background.'"
     )
 
     valid_extensions = ('.jpg', '.jpeg', '.png')
@@ -98,14 +99,14 @@ def generate_captions(folder_path):
                 if caption.startswith("ASSISTANT:"):
                     caption = caption[len("ASSISTANT:"):].strip()
                 
-                # Post-process caption to ensure "TOK man" is included
-                if "TOK" not in caption:
+                # Post-process caption to ensure the keyword is included
+                if keyword not in caption:
                     if "man" in caption.lower():
-                        # Replace "man" with "TOK man" (case-insensitive)
-                        caption = caption.replace("man", "TOK man").replace("Man", "TOK man")
+                        # Replace "man" with "keyword man" (case-insensitive)
+                        caption = caption.replace("man", f"{keyword} man").replace("Man", f"{keyword} man")
                     else:
-                        # Prepend "TOK man" if neither "TOK" nor "man" is present
-                        caption = "TOK man " + caption
+                        # Prepend "keyword man" if neither keyword nor "man" is present
+                        caption = f"{keyword} man " + caption
                 
                 # Debug: Print raw output
                 print(f"Raw caption for {filename}: {caption}")
@@ -121,13 +122,28 @@ def generate_captions(folder_path):
                 traceback.print_exc()
 
 if __name__ == "__main__":
-    folder_path = '../images'
+    # Set up argument parser
+    parser = argparse.ArgumentParser(description='Process images and generate captions.')
+    parser.add_argument('--rename', action='store_true', help='Rename images to sequential names')
+    parser.add_argument('--keyword', type=str, default="p3r50n",
+                        help=f'Keyword to use in captions (default: p3r50n)')
+    parser.add_argument('--folder', type=str, default='../images',
+                        help='Path to the folder containing images (default: ../images)')
     
-    # Check for 'rename' argument and only run rename if specified
-    if len(sys.argv) > 1 and sys.argv[1] == "rename":
+    # Parse arguments
+    args = parser.parse_args()
+    
+    folder_path = args.folder
+    keyword = args.keyword
+    
+    print(f"Using keyword: {keyword}")
+    print(f"Using folder: {folder_path}")
+    
+    # Check if rename flag is provided
+    if args.rename:
         rename_images(folder_path)
         print("Images renamed successfully.")
     
     # Always run caption generation
     print("Generating captions...")
-    generate_captions(folder_path)
+    generate_captions(folder_path, keyword)
