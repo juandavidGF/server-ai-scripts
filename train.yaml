@@ -1,8 +1,10 @@
+
+
 ---
   job: extension
   config:
     # this name will be the folder and filename name
-    name: "alextremo"
+    name: "diego"
     process:
       - type: 'sd_trainer'
         # root folder to save training sessions/samples/weights
@@ -15,6 +17,9 @@
         trigger_word: "p3r50n"
         network:
           type: "lora"
+          # type: "lokr"
+          # lokr_full_rank: true
+          # lokr_factor: 8
           linear: 16
           linear_alpha: 16
         save:
@@ -31,7 +36,7 @@
           # images will automatically be resized and bucketed into the resolution specified
           # on windows, escape back slashes with another backslash so
           # "C:\\path\\to\\images\\folder"
-          - folder_path: "images/AlexTrain"
+          - folder_path: "../images/"
             caption_ext: "txt"
             caption_dropout_rate: 0.05  # will drop out the caption 5% of time
             shuffle_tokens: false  # shuffle caption order, split by commas
@@ -39,7 +44,7 @@
             resolution: [ 512, 768, 1024 ]  # flux enjoys multiple resolutions
         train:
           batch_size: 1
-          steps: 2700  # total number of steps to train 500 - 4000 is a good range
+          steps: 3000  # total number of steps to train 500 - 4000 is a good range
           gradient_accumulation_steps: 1
           train_unet: true
           train_text_encoder: false  # probably won't work with flux
